@@ -7,5 +7,5 @@
 
 In a nutshell (from https://github.com/docker/compose/issues/6023)
 
-sudo apt install gnupg2 pass 
-gpg2 --full-generate-key
+- sudo apt install gnupg2 pass 
+- gpg2 --full-generate-key
