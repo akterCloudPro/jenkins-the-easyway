@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'Mavwn'
+    }
+    
+    environment {
+        DOCKER_TAG = getVersion()
+    }
+
+    stages {
+        stage('SCM - Pull Git repo') {
+            steps {
+                git credentialsId: 'git-login-for-cloudpro', 
+                    url: 'https://github.com/akterCloudPro/jenkins-ansible-docker.git'
+            }
+        }
+        
+        stage("Package buildin with Maven") {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        
+        stage("Docker image building") {
+            steps {
+               sh 'docker build . -t aktercloudpro/amarapp:${DOCKER_TAG}'
+            }
+        }
+        
+        stage("Docker Hub - Pushing image") {
+            steps {
+              
+              sh 'docker login -u aktercloudpro -p rodrod1208@DH'  
+              sh "docker push aktercloudpro/amarapp:${DOCKER_TAG}"
+              
+              }
+         }
+
+    }
+
+}
+
+def getVersion() {
+        def commitHash = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+        return  commitHash 
+    }
